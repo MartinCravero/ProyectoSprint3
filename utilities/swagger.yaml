@@ -1,0 +1,965 @@
+openapi: 3.0.3
+swagger: '2.0'
+info:
+  title: Delilah Resto
+  description: |-
+    API de pedidos de Delilah Resto - Proyecto 3 Acámica
+
+  contact:
+    email: martincraero123@gmail.com
+    url: http://localhost:5000
+
+#tags para organizar las operaciones
+tags:
+  - name: "Admin"
+    description: "Tiene acceso a operaciones exlusivas de administrador"
+
+  - name: "User"
+    description: "Acceso restringido a alta, modificación y baja de usuario"
+    
+  - name: "Menus"
+    description: "Artículos disponibles y actualización de los mismos"
+
+  - name: "Delivery"
+    description: "Pedidos realizados"
+
+paths:
+#cruds de delivery
+  /getAll:
+    get:
+      tags:
+        - Admin
+      summary: "Obtiene el listado de todos los pedidos realizados"
+      responses:
+        '200':
+          description: "Los pedidos realizados son:"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "Lista de pedidos"
+                items:
+                  $ref: '#/definitions/dataGetDelivery'
+        '405':
+          description: "El usuario no tiene permisos para realizar esta acción."
+        '500':
+          description: "Error al consultar el listado de las órdenes"
+        
+        security:
+            - ApiKeyAuth: [] #key del login
+            - AdminAuth: [] #validación de usuario administrador 
+        
+  /detailDelivery:
+    get:
+      tags:
+      - Admin
+      - User
+      summary: "Obtiene un detalle de un pedido específico"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "ID del pedido a solicitar"
+        schema:
+          $ref: '#/definitions/dataGetDeliveryById'
+      responses:
+        200:
+          description: "Los pedidos realizados por el usuario son:"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "Detalle del pedido"
+                items:
+                  $ref: '#/definitions/getDelivery'
+        405:
+          description: "No tiene acceso a la opción solicitada"
+        500:
+          description: "Error al buscar los pedidos"
+      security:
+        - ApiKeyAuth: [] #validación si el usuario que realizó el pedido es quién consulta el detall
+        
+  /newStatusDelivery:
+    put:
+      tags:
+      - Admin
+      summary: "Actualizar el estado del pedido"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Estado del pedido a actualizar"
+        schema:
+          $ref: '#/definitions/dataPutDelivery'
+      responses:
+        200:
+          description: "Se ha editado el estado del pedido de id"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+        400:
+          description: "No se detectó ningún cambio en el estado del pedido"
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción."
+        500:
+          description: "No se ha logrado actualizar el estado del pedido"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+      
+  /createDelivery:
+    post:
+      tags:
+      - Orders
+      summary: "Registra un nuevo pedido"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del pedido a registrar"
+        schema:
+          $ref: '#/definitions/dataPostDelivery'
+      responses:
+        200:
+          description: "Se ha agregado el pedido"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "datos de la orden"
+                items:
+                  $ref: '#/definitions/dataPostPedido'
+        403:
+          description: "Faltan ingresar datos obligatorios"
+        500:
+          description: "No se ha logrado agregar un nuevo pedido"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - ApiValidateData: [] #completar todos los capos del pedido
+      
+  /deleteDelivery:
+    delete:
+      tags:
+      - Admin
+      summary: "Eliminar pedido"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del pedido a eliminar"
+        schema:
+          $ref: '#/definitions/dataDeleteDeliveryPedido'
+      responses:
+        200:
+          description: "Se ha eliminado el pedido de id de la lista"
+          schema:
+            type: "object"
+            $ref: '#/definitions/dataDeleteDelivery'
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción." 
+        500:
+          description: "No se ha logrado eliminar el pedido"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+      
+  #cruds de menus
+  /listMenus:
+    get:
+      tags:
+      - Menus
+      summary: "Obtiene una lista con el detalle de todos los menus"
+      responses:
+        200:
+          description: "Los menus disponibles son:"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "Lista de menus"
+                items:
+                  $ref: '#/definitions/dataGetMenus'
+        500:
+          description: "Error al buscar menus"
+
+  /updateMenu:
+    put:
+      tags:
+      - Menus
+      summary: "Modifica datos de un menu existente"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del menu a modificar"
+        schema:
+          $ref: '#/definitions/dataGetMenuById'
+      responses:
+        200:
+          description: "Se ha editado el menu de id de la lista"
+          schema:
+            $ref: '#/definitions/dataPutMenu'
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+        411:
+          description: "Faltan ingresar datos obligatorios"
+        444:
+          description: "Availability debe ser Yes o No"
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción."
+        500:
+          description: "No se ha logrado actualizar el menú"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+      
+  /newMenu:
+    post:
+      tags:
+      - Menus
+      summary: "Registrar un nuevo menu"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del menu a registrar"
+        schema:
+          $ref: '#/definitions/dataPostMenus'
+      responses:
+        200:
+          description: "Menu Registrado Correctamente"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "datos del menu"
+        411:
+          description: "Faltan ingresar datos obligatorios"
+        444:
+          description: "Availability debe ser Yes o No"
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción."
+        500:
+          description: "No se ha logrado agregar un nuevo menú"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+      
+  /removeMenu:
+    delete:
+      tags:
+      - Menus
+      summary: "Elimina un menu"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "id del menu a eliminar"
+        schema:
+          $ref: '#/definitions/dataGetMenuById'
+      responses:
+        200:
+          description: "Se ha eliminado el menu de id de la lista"
+          schema:
+            $ref: '#/definitions/dataDeleteMenu'
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+        411:
+          description: "No se ha Ingresado el ID a Eliminar"
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción."
+        404:
+          description: "No existe un menu con el ID"
+        500:
+          description: "No se ha logrado eliminar el menú"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+      
+  #cruds de usuarios
+  /listUsers:
+    get:
+      tags:
+      - User
+      summary: "Obtiene un detalle de todos los usuarios registrados"
+      responses:
+        200:
+          description: "Los usuarios encontrados son:"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "Lista de usuarios"
+                items:
+                  $ref: '#/definitions/dataGetUser'
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción."   
+        500:
+          description: "Error al buscar usuario"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+      
+  /newRol:
+    put:
+      tags:
+      - Admin
+      summary: "Actualiza el rol asignado a un usuario"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del usuario y rol a actualizar"
+        schema:
+          $ref: '#/definitions/dataGetUserById'
+      responses:
+        200:
+          description: "Se ha editado el rol del usuario de id de la lista"
+          schema:
+            $ref: '#/definitions/dataPutRolUser'
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+        400:
+          description: "No se detectó modificación en el rol del usuario"
+        405:
+          description: "El usuario no tiene permisos para realizar esta acción."
+        500:
+          description: "No se ha logrado actualizar el usuario"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - AdminAuth: [] #validación de usuario administrador
+  
+  /updateUser:
+    put:
+      tags:
+      - Users
+      summary: "Modificar los datos de un usuario"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del usuario a modificar"
+        schema:
+          $ref: '#/definitions/dataGetUserById'
+      responses:
+        200:
+          description: "Se ha editado el usuario de id de la lista"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "nuevos datos del usuario"
+                items:
+                  $ref: '#/definitions/dataPutUser'
+        400:
+          description: "No se detectó ningún cambio en los datos"
+        403:
+          description: "Faltan ingresar datos obligatorios"
+        405:
+          description: "No posee permisos para realizar la acción solicitada"
+        500:
+          description: "No se ha logrado actualizar el usuario"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - UserAuth: [] #validar que el usuario que se actualiza sea el mismo logueado
+      
+  /login:
+    post:
+      tags:
+      - Users
+      summary: "Loguea al usuario"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del usuario"
+        schema:
+          $ref: '#/definitions/dataPostLogin'
+      responses:
+        200:
+          description: "Felicitaciones te has logueado correctamente."
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "datos del usuario"
+        500:
+          description: "Datos ingresados incorrectos."
+          
+    /newUser:
+      post:
+      tags:
+      - Users
+      summary: "Crear un nuevo usuario"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del usuario a registrar"
+        schema:
+          $ref: '#/definitions/dataPostUser'
+      responses:
+        200:
+          description: "Se ha agregado a la lista de usuarios"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+              response:
+                type: "array"
+                description: "datos del usuario"
+        403:
+          description: "Faltan ingresar datos obligatorios"
+        500:
+          description: "No se ha logrado agregar un nuevo usuario"
+      
+    /removeUser:
+      delete:
+      tags:
+      - Users
+      summary: "Eliminar la cuenta del usuario"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        description: "Datos del usuario"
+        schema:
+          $ref: '#/definitions/dataGetUserById'
+      responses:
+        200:
+          description: "Se ha eliminado el usuario de id de la lista"
+          schema:
+            $ref: '#/definitions/dataDeleteUser'
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                description: "Si se resolvió con error o sin error"
+              status:
+                type: "integer"
+                description: "Código de resolucion de peticion"
+              message:
+                type: "string"
+                description: "Respuesta del servidor"
+        405:
+          description: "No posee permisos para realizar la acción solicitada"
+        500:
+          description: "No se ha logrado eliminar el usuario"
+      security:
+      - ApiKeyAuth: [] #key del login
+      - UserAuth: [] #validar que el usuario que se actualiza sea el mismo logueado
+  
+  securityDefinitions:
+  ApiKeyAuth:
+    type: "apiKey"
+    name: "JWT-apiKey"
+    in: "header"
+    description: "Token de seguridad"
+    
+  validateRol:
+    type: "basic"
+    description: "Requerir Rol de administrador"
+
+
+definitions:
+
+#Delivery
+
+  dataGetDelivery:
+    type: "object"
+    required:
+    - "id_pedido"
+    - "address_to_deliver"
+    - "delivery_status"
+    - "fullname"
+    - "payment_method"
+    - "quantity"
+    - "menu_name"
+    - "total"
+    - "pedido"
+    properties:
+      id_pedido:
+        type: "integer"
+        description: "id del pedido"
+      address_to_deliver:
+        type: "string"
+        description: "dirección del envío"
+      delivery_status:
+        type: "string"
+        description: "estado del pedido"
+      fullname:
+        type: "string"
+        description: "nombre completo del usuario"
+      payment_method:
+        type: "string"
+        description: "Metodo de pago"
+      quantity:
+        type: "integer"
+        description: "Cantidad de menu elegido"
+      menu_name:
+        type: "string"
+        description: "Nombre de menu elegido"
+      total:
+        type: "integer"
+        description: "Resultado de la suma del producto de las cantidades de menu elegidos con el precio de cada menu"
+
+  dataGetDeliveryById:
+    type: "object"
+    required:
+    - "id_pedido"
+    properties:
+      id_pedido:
+        type: "integer"
+        description: "id del pedido"
+
+  dataGetDeliveryAdmin:
+    type: "object"
+    required:
+    - "id_pedido"
+    - "address_to_deliver"
+    - "delivery_status"
+    - "fullname"
+    - "payment_method"
+    - "quantity"
+    - "menu_name"
+    - "total"
+    - "pedido"
+    properties:
+      id_pedido:
+        type: "integer"
+        description: "id del pedido"
+      address_to_deliver:
+        type: "string"
+        description: "dirección del envío"
+      delivery_status:
+        type: "string"
+        description: "estado del pedido"
+      fullname:
+        type: "string"
+        description: "nombre completo del usuario"
+      payment_method:
+        type: "string"
+        description: "Metodo de pago"
+      quantity:
+        type: "integer"
+        description: "Cantidad de menu elegido"
+      menu_name:
+        type: "string"
+        description: "Nombre de menu elegido"
+      total:
+        type: "integer"
+        description: "Resultado de la suma del producto de las cantidades de menu elegidos con el precio de cada menu"
+      pedido:
+        type: "array"
+        items: 
+          type: "object" 
+          properties:
+            id_menu:
+              type: "integer"
+            quantity:
+              type: "integer"
+        description: "nombre y cantidad de menu"
+
+  dataPutDelivery:
+    type: "object"
+    required:
+    - "id_delivery"
+    - "id_delivery_status"
+    properties:
+      id_delivery:
+        type: "integer"
+        description: "id del pedido"
+      id_delivery_status:
+        type: "integer"
+        description: "id del estado del pedido"
+        
+  dataPostDelivery:
+    type: "object"
+    required:
+    - "id_user"
+    - "address_to_deliver"
+    - "id_delivery_status"
+    - "id_payment_method"
+    - "time_event"
+    properties:
+      id_user:
+        type: "integer"
+        description: "id del usuario que realizo el pedido"
+      address_to_deliver:
+        type: "string"
+        description: "dirección del envío"
+      id_delivery_status:
+        type: "integer"
+        description: "id del estado del pedido"
+      id_payment_method:
+        type: "integer"
+        description: "id del metodo de pago del pedido"
+      time_event:
+        type: "datetime"
+        description: "hora en la que se realizo el pedido"
+
+  dataPostPedido:
+    type: "object"
+    required:
+    - "id_delivery"
+    - "id_menu"
+    - "quantity"
+    properties:
+      id_delivery:
+        type: "integer"
+        description: "id del pedido"
+      id_menu:
+        type: "integer"
+        description: "id del menu seleccionado"
+      quantity:
+        type: "integer"
+        description: "cantidad seleccionada del menu"  
+        
+  dataDeleteDeliveryPedido:
+    type: "object"
+    required:
+    - "id_delivery"
+    properties:
+      id_delivery:
+        type: "integer"
+        description: "id del pedido"
+  
+  dataDeleteDelivery:
+    type: "object"
+    required:
+    - "id_delivery"
+    properties:
+      id_delivery:
+        type: "integer"
+        description: "id del pedido"
+
+  selectIdUserFromDelivery:
+    type: "object"
+    required:
+    - "id_delivery"
+    properties: 
+      id_delivery:
+        type: "integer"
+        description: "id del pedido"
+        
+ #User       
+        
+  dataPutRolUser:
+    type: "object"
+    required:
+    - "user"
+    - "rol"
+    properties:
+      user:
+        type: "string"
+        description: "usuario a modificar "
+      rol:
+        type: "string"
+        description: "rol nuevo"
+        
+  dataPutUser:
+    type: "object"
+    required:
+    - "id_user"
+    - "user"
+    - "fullname"
+    - "email"
+    - "phone"
+    - "address"
+    - "password"
+    properties:
+      id_user:
+        type: "id_user"
+        description: "id del usuario"
+      user:
+        type: "string"
+        description: "usuario"
+      fullname:
+        type: "string"
+        description: "nombre completo del usuario"
+      email:
+        type: "string"
+        description: "email del usuario"
+      phone:
+        type: "integer"
+        description: "telefono del usuario"
+      address:
+        type: "string"
+        description: "dirección del usuario"
+      password:
+        type: "string"
+        description: "contraseña del usuario"
+        
+  dataPostUser:
+    type: "object"
+    required:
+    - "user"
+    - "fullname"
+    - "email"
+    - "phone"
+    - "address"
+    - "password"
+    properties:
+      user:
+        type: "string"
+        description: "usuario"
+      fullname:
+        type: "string"
+        description: "nombre completo del usuario"
+      email:
+        type: "string"
+        description: "email del usuario"
+      phone:
+        type: "integer"
+        description: "telefono del usuario"
+      address:
+        type: "string"
+        description: "dirección del usuario"
+      password:
+        type: "string"
+        description: "contraseña del usuario"
+
+  dataPostLogin:
+    type: "object"
+    required:
+    - "user"
+    - "password"
+    properties:
+      user:
+        type: "string"
+        description: "usuario"
+      password:
+        type: "string"
+        description: "contraseña del usuario"
+        
+  dataDeleteUser:
+    type: "object"
+    required:
+    - "id_user"
+    properties:
+      id_user:
+        type: "id_user"
+        description: "id del usuario"
+        
+  dataGetUserById:
+    type: "object"
+    required:
+    - "id_user"
+    properties:
+      id_user:
+        type: "id_user"
+        description: "id del usuario"
+
+#Menus
+
+  dataGetMenuById:
+    type: "object"
+    required:
+    - "id_menu"
+    properties:
+      id_menu:
+        type: "integer"
+        description: "id del menu"
+
+  dataPostMenus:
+    type: "object"
+    required:
+    - "menu_name"
+    - "description"
+    - "price"
+    - "availability"
+    properties:
+      menu_name:
+        type: "string"
+        description: "nombre del menu"
+      description:
+        type: "string"
+        description: "breve descripcion del menu"
+      price:
+        type: "integer"
+        description: "precio del menu"
+      availability:
+        type: "string"
+        description: "Yes para disponible, No para no disponible"
+
+  dataPutMenu:
+    type: "object"
+    required:
+    - "id_menu"
+    - "menu_name"
+    - "description"
+    - "price"
+    - "availability"
+    properties:
+      id_menu:
+        type: "integer"
+        description: "id del menu"
+      menu_name:
+        type: "string"
+        description: "nombre del menu"
+      description:
+        type: "string"
+        description: "breve descripcion del menu"
+      price:
+        type: "integer"
+        description: "precio del menu"
+      availability:
+        type: "string"
+        description: "Yes para disponible, No para no disponible"
+
+  dataDeleteMenu:
+    type: "object"
+    required:
+    - "id_menu"
+    properties:
+      id_menu:
+        type: "integer"
+        description: "id del menu"
+
+  
+
+  
+
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /MartinCravero/ProyectoSprint3/Proyecto-3
+schemes:
+ - https
+
+    
+
+  

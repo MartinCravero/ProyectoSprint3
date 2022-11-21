@@ -1,0 +1,438 @@
+{
+	"info": {
+		"_postman_id": "a82389a7-f7e2-49d0-a159-e68639803271",
+		"name": "Dellilah",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Menus",
+			"item": [
+				{
+					"name": "getMenus",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/menus/listMenus",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"menus",
+								"listMenus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postMenus",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"menu_name\": \"Lomito\",\r\n    \"description\": \"Lomo completo con papas y extra cheddar\",\r\n    \"price\": 1500,\r\n    \"availability\": \"YES\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/menus/newMenu",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"menus",
+								"newMenu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "putMenus",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_menu\": 2,\r\n    \"menu_name\": \"Papas\",\r\n    \"description\": \"Papas a la carbonara\",\r\n    \"price\": 1800,\r\n    \"availability\": \"YES\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/menus/updateMenu",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"menus",
+								"updateMenu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteMenus",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_menu\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/menus/removeMenu",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"menus",
+								"removeMenu"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "postUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": \"Piojo\",\r\n    \"fullname\": \"Hernan Lopez\",\r\n    \"email\": \"piojolopez@gmail.com\",\r\n    \"phone\": 351288974,\r\n    \"address\": \"Hipolito Irigoyen 124 14 A\",\r\n    \"password\": \"piojolopez10\",\r\n    \"rol\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/newUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"newUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/user/listUsers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"listUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "putUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\r\n            \"id_user\": 2,\r\n            \"user\": \"Piojito\",\r\n            \"fullname\": \"Emilio Rochack\",\r\n            \"email\": \"piojolopez2@gmail.com\",\r\n            \"phone\": 351288979,\r\n            \"address\": \"Hipolito Irigoyen 128 14 A\",\r\n            \"password\": \"piojolopez10\",\r\n            \"rol\": 1\r\n        }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/updateUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"updateUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_user\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/removeUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"removeUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\":\"martincho\",\r\n    \"password\":\"martincho123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "putRolUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n            \"id_user\": 3,\r\n            \"rol\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/user/newRol",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"newRol"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery",
+			"item": [
+				{
+					"name": "postDelivery",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": \"Piojo\",\r\n    \"address_to_deliver\": \"Hipolito Irigoyen 124 14a\",\r\n    \"pedido\":[\r\n      {\r\n         \"id_menu\":1,\r\n         \"quantity\":3\r\n      },\r\n      {\r\n         \"id_menu\":2,\r\n         \"quantity\":4\r\n      }\r\n    ],\r\n    \"id_payment_method\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/delivery/createDelivery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"delivery",
+								"createDelivery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllDeliverys",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/delivery/getAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"delivery",
+								"getAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PutDelivery",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_delivery\": 2,\r\n    \"id_delivery_status\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/delivery/newStatusDelivery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"delivery",
+								"newStatusDelivery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteDelivery",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_delivery\":3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/delivery/deleteDelivery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"delivery",
+								"deleteDelivery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getDelivery",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_delivery\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/delivery/detailDelivery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"delivery",
+								"detailDelivery"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
